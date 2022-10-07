@@ -1,0 +1,53 @@
+Sub stocktick()
+        Dim ws As Worksheet
+        
+        'Loop through each worksheet
+        For Each ws In Worksheets
+            Dim volume As Double
+            volume = 0
+            Dim summary_row As Long
+            summary_row = 2
+            Dim lastrow As Long
+            Dim i As Long
+            
+            'Caluculate length of data set row
+            lastrow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+            
+            'Set Column Titles
+            ws.Cells(1, 9).Value = "Ticker"
+            ws.Cells(1, 10).Value = "Yearly Change"
+            ws.Cells(1, 11).Value = "Percent Change"
+            ws.Cells(1, 12).Value = "Total Stock Volume"
+            
+            'Loop through each row in data set
+            For i = 2 To lastrow
+                If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                    'update volume value
+                    volume = volume + ws.Cells(i, 7).Value
+
+                    ' Print the values in the Summary Table
+                    ws.Range("I" & summary_row).Value = ws.Cells(i, 1).Value
+                    ws.Range("L" & summary_row).Value = volume
+                    ws.Range("J" & summary_row).Value = ws.Cells(i, 6).Value - ws.Cells(i, 3).Value
+                    If ws.Cells(i, 3).Value <> 0 Then
+                    ws.Range("K" & summary_row).Value = (ws.Range("J" & summary_row).Value / ws.Cells(i, 3).Value) * 100
+                    Else
+                    ws.Range("K" & summary_row).Value = (ws.Range("J" & summary_row).Value / 1) * 100
+                    End If
+                    If ws.Range("J" & summary_row).Value >= 0 Then
+                        ws.Range("J" & summary_row).Interior.ColorIndex = 4
+                    Else
+                         ws.Range("J" & summary_row).Interior.ColorIndex = 3
+                    End If
+                    'increase summary row
+                    summary_row = summary_row + 1
+                    'reset volume counter
+                    volume = 0
+                Else
+                    volume = volume + ws.Cells(i, 7).Value
+                End If
+          
+            Next i
+            
+         Next ws
+End Sub
